@@ -9,7 +9,7 @@ var ACCOUNT_ID = 0;
 var FAMILY_SEED = 33;
 var ED25519_SEED = [0x01, 0xE1, 0x4B];
 
-module.exports = apiFactory({
+var exports = apiFactory({
   sha256: function(bytes) {
     return hashjs.sha256().update(bytes).digest();
   },
@@ -31,3 +31,14 @@ module.exports = apiFactory({
     K256Seed: {version: FAMILY_SEED}
   }
 });
+
+exports.isValidAddress = function(address) {
+  try {
+    var bytes = exports.decodeAccountID(address);
+    return bytes.length === 20;
+  } catch (error) {
+    return false;
+  }
+};
+
+module.exports = exports;
