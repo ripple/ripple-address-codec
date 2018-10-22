@@ -1,20 +1,20 @@
-'use strict';
+'use strict'
 
 function seqEqual(arr1, arr2) {
   if (arr1.length !== arr2.length) {
-    return false;
+    return false
   }
 
-  for (var i = 0; i < arr1.length; i++) {
+  for (let i = 0; i < arr1.length; i++) {
     if (arr1[i] !== arr2[i]) {
-      return false;
+      return false
     }
   }
-  return true;
+  return true
 }
 
 function isSequence(val) {
-  return val.length !== undefined;
+  return val.length !== undefined
 }
 
 /**
@@ -28,30 +28,32 @@ function isSequence(val) {
 * @return {Array} - concatenated arguments
 */
 function concatArgs() {
-  var ret = [];
+  const ret = []
+  const _len = arguments.length
+  const args = Array(_len)
 
-  for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
-    args[_key] = arguments[_key];
+  for (let _key = 0; _key < _len; _key++) {
+    args[_key] = arguments[_key]
   }
 
   args.forEach(function (arg) {
     if (isSequence(arg)) {
-      for (var j = 0; j < arg.length; j++) {
-        ret.push(arg[j]);
+      for (let j = 0; j < arg.length; j++) {
+        ret.push(arg[j])
       }
     } else {
-      ret.push(arg);
+      ret.push(arg)
     }
-  });
-  return ret;
+  })
+  return ret
 }
 
 function isSet(o) {
-  return o !== null && o !== undefined;
+  return o !== null && o !== undefined
 }
 
 module.exports = {
   seqEqual: seqEqual,
   concatArgs: concatArgs,
   isSet: isSet
-};
+}

@@ -2,8 +2,8 @@
  * Codec class
  */
 
-var baseCodec = require('base-x')
-const {seqEqual, concatArgs} = require('./x-address-codec/utils')
+const baseCodec = require('base-x')
+const {seqEqual, concatArgs} = require('.//utils')
 
 class Codec {
   sha256: (bytes: Uint8Array) => Buffer
@@ -23,7 +23,7 @@ class Codec {
 
   /**
    * Encoder.
-   * 
+   *
    * @param bytes Buffer of data to encode.
    * @param opts Options object including the version bytes and the expected length of the data to encode.
    */
@@ -53,7 +53,7 @@ class Codec {
 
   /**
    * Decoder.
-   * 
+   *
    * @param base58string Base58Check-encoded string to decode.
    * @param opts Options object including the version byte(s) and the expected length of the data after decoding.
    */
@@ -114,7 +114,7 @@ class Codec {
   decodeChecked(base58string: string) {
     const buffer = this.decodeRaw(base58string)
     if (buffer.length < 5) {
-      throw new Error('invalid_input_size: decoded data must have length >= 5');
+      throw new Error('invalid_input_size: decoded data must have length >= 5')
     }
     if (!this.verifyCheckSum(buffer)) {
       throw new Error('checksum_invalid')
@@ -127,8 +127,8 @@ class Codec {
   }
 
   verifyCheckSum(bytes: Buffer) {
-    var computed = this.sha256(this.sha256(bytes.slice(0, -4))).slice(0, 4)
-    var checksum = bytes.slice(-4)
+    const computed = this.sha256(this.sha256(bytes.slice(0, -4))).slice(0, 4)
+    const checksum = bytes.slice(-4)
     return seqEqual(computed, checksum)
   }
 }
@@ -145,14 +145,14 @@ const ACCOUNT_ID = 0
 const FAMILY_SEED = 0x21 // 33
 const ED25519_SEED = [0x01, 0xE1, 0x4B] // [1, 225, 75]
 
-const options = {
+const codecOptions = {
   sha256: function(bytes: Uint8Array) {
     return createHash('sha256').update(Buffer.from(bytes)).digest()
   },
   alphabet: 'rpshnaf39wBUDNEGHJKLM4PQRST7VWXYZ2bcdeCg65jkm8oFqi1tuvAxyz'
 }
 
-const codecWithXrpAlphabet = new Codec(options)
+const codecWithXrpAlphabet = new Codec(codecOptions)
 
 // entropy is a Buffer of size 16
 // type is 'ed25519' or 'secp256k1'
