@@ -13,12 +13,12 @@ function toBytes(hex) {
   return new Buffer(hex, 'hex').toJSON().data
 }
 
-function UInt32LE_ToUInt32(hex) {
+function uInt32LE_ToUInt32(hex) {
   return Buffer.from(hex, 'hex').readUInt32LE()
 }
 
-function UInt32_ToUInt32LE(int) {
-  const buf = Buffer(8)
+function uInt32_ToUInt32LE(int) {
+  const buf = new Buffer(8)
   buf.writeUInt32LE(int, 0)
   return buf.toString('hex').toUpperCase()
 }
@@ -70,20 +70,25 @@ describe('ripple-address-codec', function() {
   it('can decode a tagged address (XLS-5d) to AccountID and tag', function() {
     const tagged = 'r1WTvVjuoBM9vsm2p395AyzCQcJyE9CCWEMvo5U5sP5Px5'
     const decodedHex = toHex(api.decodeTaggedAddress(tagged))
-    assert.equal(api.encodeAccountID(toBytes(decodedHex.slice(0, -18))), 'rGWrZyQqhTp9Xu7G5Pkayo7bXjH4k4QYpf')
+    const encoded = api.encodeAccountID(toBytes(decodedHex.slice(0, -18)))
+    assert.equal(encoded, 'rGWrZyQqhTp9Xu7G5Pkayo7bXjH4k4QYpf')
     assert.equal(decodedHex.slice(-18, -16), '01')
-    assert.equal(UInt32LE_ToUInt32(decodedHex.slice(-16)), 16781933)
+    assert.equal(uInt32LE_ToUInt32(decodedHex.slice(-16)), 16781933)
   })
-  it('can encode an AccountID without tag to a tagged address (XLS-5d)', function() {
+  it('can encode AccountID without tag to tagged address (XLS-5d)', function() {
     const account = 'rGWrZyQqhTp9Xu7G5Pkayo7bXjH4k4QYpf'
     const decoded = toHex(api.decodeAccountID(account))
-    assert.equal(api.encodeTaggedAddress(toBytes(decoded + '00' + UInt32_ToUInt32LE(0))), 'r1WTvVjuoBM9vsm2p395AyzCQcJyEp8aG4YHcqE3XLDehK')
+    const taggedHex = toBytes(decoded + '00' + uInt32_ToUInt32LE(0))
+    const encoded = api.encodeTaggedAddress(taggedHex)
+    assert.equal(encoded, 'r1WTvVjuoBM9vsm2p395AyzCQcJyEp8aG4YHcqE3XLDehK')
   })
-  it('can encode an AccountID and tag to a tagged address (XLS-5d)', function() {
+  it('can encode AccountID + tag to tagged address (XLS-5d)', function() {
     const account = 'rGWrZyQqhTp9Xu7G5Pkayo7bXjH4k4QYpf'
     const tag = 4294967294
     const decoded = toHex(api.decodeAccountID(account))
-    assert.equal(api.encodeTaggedAddress(toBytes(decoded + '01' + UInt32_ToUInt32LE(tag))), 'r1WTvVjuoBM9vsm2p395AyzCQcJyEURPMMjRhJoyxQhdt5')
+    const taggedHex = toBytes(decoded + '01' + uInt32_ToUInt32LE(tag))
+    const encoded = api.encodeTaggedAddress(taggedHex)
+    assert.equal(encoded, 'r1WTvVjuoBM9vsm2p395AyzCQcJyEURPMMjRhJoyxQhdt5')
   })
 
   it('isValidAddress - secp256k1 address valid', function() {
@@ -99,7 +104,8 @@ describe('ripple-address-codec', function() {
     assert(!api.isValidAddress(''))
   })
   it('isValidTaggedAddress - secp256k1 tagged address valid', function() {
-    assert(api.isValidTaggedAddress('r1WTvVjuoBM9vsm2p395AyzCQcJyE3eVsfqQrBa3X4q4qF'))
+    const address = 'r1WTvVjuoBM9vsm2p395AyzCQcJyE3eVsfqQrBa3X4q4qF'
+    assert(api.isValidTaggedAddress(address))
   })
   it('isValidTaggedAddress - invalid for untagged', function() {
     assert(!api.isValidTaggedAddress('rGWrZyQqhTp9Xu7G5Pkayo7bXjH4k4QYpf'))
