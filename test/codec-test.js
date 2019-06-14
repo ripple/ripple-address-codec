@@ -98,5 +98,11 @@ describe('ripple-address-codec', function() {
   it('isValidAddress - empty', function() {
     assert(!api.isValidAddress(''))
   })
+  it('isValidTaggedAddress - secp256k1 tagged address valid', function() {
+    assert(api.isValidTaggedAddress('r1WTvVjuoBM9vsm2p395AyzCQcJyE3eVsfqQrBa3X4q4qF'))
+  })
+  it('isValidTaggedAddress - invalid for untagged', function() {
+    assert(!api.isValidTaggedAddress('rGWrZyQqhTp9Xu7G5Pkayo7bXjH4k4QYpf'))
+  })
 
 })
