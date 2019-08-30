@@ -15,11 +15,11 @@ function toBytes(hex) {
 
 describe('ripple-address-codec', function() {
   function makeTest(type, base58, hex) {
-    it('can translate between ' + hex + ' and ' + base58 + ' (encode ' + type + ')', function() {
+    it(`can translate between ${hex} and ${base58} (encode ${type})`, function() {
       const actual = api['encode' + type](toBytes(hex))
       assert.equal(actual, base58)
     })
-    it('can translate between ' + base58 + ' and ' + hex + ' (decode ' + type + ')', function() {
+    it(`can translate between ${base58} and ${hex} (decode ${type})`, function() {
       const buf = api['decode' + type](base58)
       assert.equal(toHex(buf), hex)
     })

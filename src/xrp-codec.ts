@@ -60,7 +60,7 @@ class Codec {
   decode(base58string: string, opts: {
     versions?: (number | number[])[],
     expectedLength?: number,
-    versionTypes?: string[]
+    versionTypes?: ['ed25519', 'secp256k1']
   } = {}) {
     const versions = Array.isArray(opts.versions) ? opts.versions : [opts.versions]
     const types = opts.versionTypes
@@ -175,7 +175,7 @@ export function encodeSeed(entropy: Buffer, type: 'ed25519' | 'secp256k1'): stri
 }
 
 export function decodeSeed(seed: string, opts: {
-  versionTypes?: string[],
+  versionTypes?: ['ed25519', 'secp256k1'],
   versions?: (number | number[])[]
   expectedLength?: number
 } = {}) {
