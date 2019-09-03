@@ -15,7 +15,6 @@
   "scripts": {
     "compile": "tsc",
     "test": "tsc && istanbul test _mocha",
-    "codecov": "cat ./coverage/coverage.json | ./node_modules/codecov.io/bin/codecov.io.js",
     "lint": "tslint -p ./"
   },
   "devDependencies": {
