@@ -140,7 +140,6 @@ class Codec {
 const createHash = require('create-hash')
 
 const NODE_PUBLIC = 28
-// const NODE_PRIVATE = 32
 const ACCOUNT_ID = 0
 const FAMILY_SEED = 0x21 // 33
 const ED25519_SEED = [0x01, 0xE1, 0x4B] // [1, 225, 75]
