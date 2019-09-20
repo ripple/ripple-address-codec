@@ -44,3 +44,9 @@ Run unit tests with:
 Use `--watch` to run in watch mode, so that when you modify the tests, they are automatically re-run:
 
     yarn test --watch
+
+Use `--coverage` to generate and display code coverage information:
+
+    yarn test --coverage
+
+This tells jest to output code coverage info in the `./coverage` directory, in addition to showing it on the command line.
