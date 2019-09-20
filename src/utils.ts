@@ -8,7 +8,7 @@ type Sequence = number[] | Buffer | Uint8Array
  * @param arr1 One of the arrays to compare.
  * @param arr2 The other array to compare.
  */
-function seqEqual(arr1: Sequence, arr2: Sequence): boolean {
+export function seqEqual(arr1: Sequence, arr2: Sequence): boolean {
   if (arr1.length !== arr2.length) {
     return false
   }
@@ -40,7 +40,7 @@ function isSequence(val: Sequence | number): val is Sequence {
 *
 * @returns {number[]} Array of concatenated arguments
 */
-function concatArgs(...myArgs: (number | Sequence)[]): number[] {
+export function concatArgs(...myArgs: (number | Sequence)[]): number[] {
   const ret: number[] = []
 
   myArgs.forEach(function (arg) {
@@ -53,9 +53,4 @@ function concatArgs(...myArgs: (number | Sequence)[]): number[] {
     }
   })
   return ret
-}
-
-module.exports = {
-  seqEqual: seqEqual,
-  concatArgs: concatArgs
 }

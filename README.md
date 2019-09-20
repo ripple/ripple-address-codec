@@ -34,3 +34,13 @@
   112,
   114 ]
 ```
+
+## Tests
+
+Run unit tests with:
+
+    yarn test
+
+Use `--watch` to run in watch mode, so that when you modify the tests, they are automatically re-run:
+
+    yarn test --watch
