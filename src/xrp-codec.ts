@@ -100,6 +100,10 @@ class Codec {
         throw new Error('version_invalid: version bytes do not match any of the provided version(s)')
       }
 
+      if (ret.bytes === null) {
+        throw new Error('payload is null')
+      }
+
       if (opts.expectedLength && ret.bytes.length !== opts.expectedLength) {
         throw new Error('unexpected_payload_length: payload length does not match expectedLength')
       }
