@@ -41,7 +41,7 @@ test('can pass a type as second arg to encodeSeed', function() {
   const decoded = api.decodeSeed(edSeed)
   expect(toHex(decoded.bytes)).toBe('4C3A1D213FBDFB14C7C28D609469B341')
   expect(decoded.type).toBe('ed25519')
-  expect(api.encodeSeed(decoded.bytes, decoded.type)).toBe(edSeed)
+  expect(api.encodeSeed(decoded.bytes, /* decoded.type */ 'ed25519')).toBe(edSeed)
 })
 
 test('isValidAddress - secp256k1 address valid', function() {
@@ -91,6 +91,18 @@ describe('encodeSeed', function() {
     const result = api.encodeSeed(Buffer.from('FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF', 'hex'), 'ed25519')
     expect(result).toBe('sEdV19BLfeQeKdEXyYA4NhjPJe6XBfG')
   })
+
+  test('attempting to encode a seed with less than 16 bytes of entropy throws', function() {
+    expect(() => {
+      api.encodeSeed(Buffer.from('CF2DE378FBDD7E2EE87D486DFB5A7BF', 'hex'), 'secp256k1')
+    }).toThrow('entropy must have length 16')
+  })
+
+  test('attempting to encode a seed with more than 16 bytes of entropy throws', function() {
+    expect(() => {
+      api.encodeSeed(Buffer.from('CF2DE378FBDD7E2EE87D486DFB5A7BFFFF', 'hex'), 'secp256k1')
+    }).toThrow('entropy must have length 16')
+  })
 })
 
 describe('decodeSeed', function() {
@@ -114,6 +126,14 @@ describe('encodeAccountID', function() {
     const encoded = api.encodeAccountID(Buffer.from('BA8E78626EE42C41B46D46C3048DF3A1C3C87072', 'hex'))
     expect(encoded).toBe('rJrRMgiRgrU6hDF4pgu5DXQdWyPbY35ErN')
   })
+
+  test('unexpected length should throw', function() {
+    expect(() => {
+      api.encodeAccountID(Buffer.from('ABCDEF', 'hex'))
+    }).toThrow(
+      'unexpected_payload_length: bytes.length does not match expectedLength'
+    )
+  })
 })
 
 describe('decodeNodePublic', function() {
@@ -122,4 +142,92 @@ describe('decodeNodePublic', function() {
     const decoded = api.decodeNodePublic('n9MXXueo837zYH36DvMc13BwHcqtfAWNJY5czWVbp7uYTj7x17TH')
     expect(toHex(decoded)).toBe('0388E5BA87A000CB807240DF8C848EB0B5FFA5C8E5A521BC8E105C0F0A44217828')
   })
+})
+
+test('encodes 123456789 with version byte of 0', () => {
+  expect(api.codec.encode(Buffer.from('123456789'), {
+    versions: [0],
+    expectedLength: 9
+  })).toBe('rnaC7gW34M77Kneb78s')
+})
+
+test('multiple versions with no expected length should throw', () => {
+  expect(() => {
+    api.codec.decode('rnaC7gW34M77Kneb78s', {
+      versions: [0, 1]
+    })
+  }).toThrow('expectedLength is required because there are >= 2 possible versions')
+})
+
+test('attempting to decode data with length < 5 should throw', () => {
+  expect(() => {
+    api.codec.decode('1234', {
+      versions: [0]
+    })
+  }).toThrow('invalid_input_size: decoded data must have length >= 5')
+})
+
+test('attempting to decode data with unexpected version should throw', () => {
+  expect(() => {
+    api.codec.decode('rnaC7gW34M77Kneb78s', {
+      versions: [2]
+    })
+  }).toThrow('version_invalid: version bytes do not match any of the provided version(s)')
+})
+
+test('invalid checksum should throw', () => {
+  expect(() => {
+    api.codec.decode('123456789', {
+      versions: [0, 1]
+    })
+  }).toThrow('checksum_invalid')
+})
+
+test('empty payload should throw', () => {
+  expect(() => {
+    api.codec.decode('', {
+      versions: [0, 1]
+    })
+  }).toThrow('invalid_input_size: decoded data must have length >= 5')
+})
+
+test('decode data', () => {
+  expect(api.codec.decode('rnaC7gW34M77Kneb78s', {
+    versions: [0]
+  })).toStrictEqual({
+    version: [0],
+    bytes: Buffer.from('123456789'),
+    type: null
+  })
+})
+
+test('decode data with expected length', function() {
+  expect(api.codec.decode('rnaC7gW34M77Kneb78s', {
+      versions: [0],
+      expectedLength: 9
+    })
+    ).toStrictEqual({
+      version: [0],
+      bytes: Buffer.from('123456789'),
+      type: null
+    })
+})
+
+test('decode data with wrong expected length should throw', function() {
+  expect(() => {
+    api.codec.decode('rnaC7gW34M77Kneb78s', {
+      versions: [0],
+      expectedLength: 8
+    })
+  }).toThrow(
+    'version_invalid: version bytes do not match any of the provided version(s)'
+  )
+  expect(() => {
+    api.codec.decode('rnaC7gW34M77Kneb78s', {
+      versions: [0],
+      expectedLength: 10
+    })
+  }).toThrow(
+    'version_invalid: version bytes do not match any of the provided version(s)'
+  )
 })
