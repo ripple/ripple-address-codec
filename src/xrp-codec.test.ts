@@ -94,7 +94,7 @@ describe('encodeSeed', function() {
 
   test('attempting to encode a seed with less than 16 bytes of entropy throws', function() {
     expect(() => {
-      api.encodeSeed(Buffer.from('CF2DE378FBDD7E2EE87D486DFB5A7BF', 'hex'), 'secp256k1')
+      api.encodeSeed(Buffer.from('CF2DE378FBDD7E2EE87D486DFB5A7B', 'hex'), 'secp256k1')
     }).toThrow('entropy must have length 16')
   })
 
