@@ -1,6 +1,26 @@
 # ripple-address-codec [![NPM](https://img.shields.io/npm/v/ripple-address-codec.svg)](https://npmjs.org/package/ripple-address-codec)
 
+Functions for encoding and decoding XRP Ledger addresses and seeds. Also includes support for encoding/decoding [rippled validator (node) public keys](https://xrpl.org/run-rippled-as-a-validator.html).
+
+## X-address Conversion
+
+All tools and apps in the XRP Ledger ecosystem are encouraged to adopt support for the X-address format. The X-address format encodes an 'Account ID' and a (destination) tag into a single Base58 string. This prevents users from unintentionally omitting the destination tag when sending and receiving payments and other transactions.
+
 ## API
+
+### encodeXAddress(classicAddress: string, tag?: number | undefined): string
+
+Encode a classic address and (optional) tag to an X-address. If `tag` is undefined or not provided, the returned X-address explicitly indicates that the recipient does not want a tag to be used.
+
+### decodeXAddress(xAddress: string): {classicAddress: string, tag?: number}
+
+Decode an X-address to a classic address and tag. If the X-address did not have a tag, the returned object will not have a `tag` field.
+
+### isValidXAddress(xAddress: string): boolean
+
+Returns `true` if the provided X-address is valid, or `false` otherwise.
+
+### Other functions
 
 ```js
 > var api = require('ripple-address-codec');
@@ -50,3 +70,11 @@ Use `--coverage` to generate and display code coverage information:
     yarn test --coverage
 
 This tells jest to output code coverage info in the `./coverage` directory, in addition to showing it on the command line.
+
+## Acknowledgements
+
+This library references and adopts code and standards from the following sources:
+
+- [XLS-5d Standard for Tagged Addresses](https://github.com/xrp-community/standards-drafts/issues/6)
+- [XRPL Tagged Address Codec](https://github.com/xrp-community/xrpl-tagged-address-codec)
+- [X-Address transaction functions](https://github.com/codetsunami/xrpl-tools/tree/master/xaddress-functions)
