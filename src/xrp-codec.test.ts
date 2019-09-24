@@ -8,7 +8,15 @@ function toBytes(hex: string) {
   return Buffer.from(hex, 'hex').toJSON().data
 }
 
-function makeTest(encoder: Function, decoder: Function, base58: string, hex: string) {
+/**
+ * Create a test case for encoding data and a test case for decoding data.
+ *
+ * @param encoder Encoder function to test
+ * @param decoder Decoder function to test
+ * @param base58 Base58-encoded string to decode
+ * @param hex Hexadecimal representation of expected decoded data
+ */
+function makeEncodeDecodeTest(encoder: Function, decoder: Function, base58: string, hex: string) {
   test(`can translate between ${hex} and ${base58}`, function() {
     const actual = encoder(toBytes(hex))
     expect(actual).toBe(base58)
@@ -19,10 +27,10 @@ function makeTest(encoder: Function, decoder: Function, base58: string, hex: str
   })
 }
 
-makeTest(api.encodeAccountID, api.decodeAccountID, 'rJrRMgiRgrU6hDF4pgu5DXQdWyPbY35ErN',
+makeEncodeDecodeTest(api.encodeAccountID, api.decodeAccountID, 'rJrRMgiRgrU6hDF4pgu5DXQdWyPbY35ErN',
   'BA8E78626EE42C41B46D46C3048DF3A1C3C87072')
 
-makeTest(api.encodeNodePublic, api.decodeNodePublic,
+makeEncodeDecodeTest(api.encodeNodePublic, api.decodeNodePublic,
   'n9MXXueo837zYH36DvMc13BwHcqtfAWNJY5czWVbp7uYTj7x17TH',
   '0388E5BA87A000CB807240DF8C848EB0B5FFA5C8E5A521BC8E105C0F0A44217828')
 
@@ -39,9 +47,10 @@ test('can decode arbitrary seeds', function() {
 test('can pass a type as second arg to encodeSeed', function() {
   const edSeed = 'sEdTM1uX8pu2do5XvTnutH6HsouMaM2'
   const decoded = api.decodeSeed(edSeed)
+  const type = 'ed25519'
   expect(toHex(decoded.bytes)).toBe('4C3A1D213FBDFB14C7C28D609469B341')
-  expect(decoded.type).toBe('ed25519')
-  expect(api.encodeSeed(decoded.bytes, /* decoded.type */ 'ed25519')).toBe(edSeed)
+  expect(decoded.type).toBe(type)
+  expect(api.encodeSeed(decoded.bytes, type)).toBe(edSeed)
 })
 
 test('isValidAddress - secp256k1 address valid', function() {

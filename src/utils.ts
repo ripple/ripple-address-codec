@@ -1,5 +1,3 @@
-// Utilities
-
 type Sequence = number[] | Buffer | Uint8Array
 
 /**
@@ -40,10 +38,10 @@ function isSequence(val: Sequence | number): val is Sequence {
 *
 * @returns {number[]} Array of concatenated arguments
 */
-export function concatArgs(...myArgs: (number | Sequence)[]): number[] {
+export function concatArgs(...args: (number | Sequence)[]): number[] {
   const ret: number[] = []
 
-  myArgs.forEach(function (arg) {
+  args.forEach(function (arg) {
     if (isSequence(arg)) {
       for (let j = 0; j < arg.length; j++) {
         ret.push(arg[j])
