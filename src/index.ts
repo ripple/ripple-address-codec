@@ -8,23 +8,27 @@ import {
   decodeNodePublic, // Decode an XRP Ledger node public key into its raw bytes
   isValidAddress // Check whether a classic address (r...) is valid
 } from './xrp-codec'
+import * as assert from 'assert'
 
-const prefixBytes = Buffer.from([0x05, 0x44])
+const PREFIX_BYTES = {
+  MAIN: Buffer.from([0x05, 0x44]), // 5, 68
+  TEST: Buffer.from([0x04, 0x93]) // 4, 147
+}
 
-function encodeXAddress(classicAddress: string, tag?: number | undefined): string {
+function encodeXAddress(classicAddress: string, tag: number | false, test: boolean): string {
   const MAX_32_BIT_UNSIGNED_INT = 4294967295
-  const flag = tag === undefined ? 0 : tag <= MAX_32_BIT_UNSIGNED_INT ? 1 : 2
+  const flag = tag === false ? 0 : tag <= MAX_32_BIT_UNSIGNED_INT ? 1 : 2
   if (flag === 2) {
     throw new Error('Invalid tag')
   }
 
   const accountId = decodeAccountID(classicAddress)
-  if (tag === undefined) {
+  if (tag === false) {
     tag = 0
   }
   const bytes = Buffer.concat(
     [
-      prefixBytes,
+      test ? PREFIX_BYTES.TEST : PREFIX_BYTES.MAIN,
       accountId,
       Buffer.from(
         [
@@ -42,26 +46,38 @@ function encodeXAddress(classicAddress: string, tag?: number | undefined): strin
   return xAddress
 }
 
-function decodeXAddress(xAddress: string): {classicAddress: string, tag?: number} {
+function decodeXAddress(xAddress: string): {classicAddress: string, tag: number | false, test: boolean} {
   const decoded = codec.decodeChecked(xAddress)
-  if (!prefixBytes.equals(decoded.slice(0, 2))) {
-    throw new Error('Invalid X-address: bad prefix')
-  }
+  const test = (() => {
+    const decodedPrefix = decoded.slice(0, 2)
+    if (PREFIX_BYTES.MAIN.equals(decodedPrefix)) {
+      return false
+    } else if (PREFIX_BYTES.TEST.equals(decodedPrefix)) {
+      return true
+    } else {
+      throw new Error('Invalid X-address: bad prefix')
+    }
+  })()
   const classicAddress = encodeAccountID(decoded.slice(2, 22))
   const flag = decoded[22]
-  if (flag === 0) {
-    return {classicAddress}
-  }
   if (flag >= 2) {
+    // No support for 64-bit tags at this time
     throw new Error('Unsupported X-address')
   }
-
-  // Little-endian to big-endian
-  const tag = decoded[23] + decoded[24] * 0x100 + decoded[25] * 0x10000 + decoded[26] * 0x1000000
-
+  const tag = (() => {
+    if (flag === 1) {
+      // Little-endian to big-endian
+      return decoded[23] + decoded[24] * 0x100 + decoded[25] * 0x10000 + decoded[26] * 0x1000000
+    }
+    assert.strictEqual(flag, 0, 'flag must be zero to indicate no tag')
+    assert.ok(Buffer.from('0000000000000000', 'hex').equals(decoded.slice(23, 23 + 8)),
+      'remaining bytes must be zero')
+    return false
+  })()
   return {
     classicAddress,
-    tag
+    tag,
+    test
   }
 }
 

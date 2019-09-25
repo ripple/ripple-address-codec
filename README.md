@@ -4,21 +4,43 @@ Functions for encoding and decoding XRP Ledger addresses and seeds. Also include
 
 ## X-address Conversion
 
-All tools and apps in the XRP Ledger ecosystem are encouraged to adopt support for the X-address format. The X-address format encodes an 'Account ID' and a (destination) tag into a single Base58 string. This prevents users from unintentionally omitting the destination tag when sending and receiving payments and other transactions.
+All tools and apps in the XRP Ledger ecosystem are encouraged to adopt support for the X-address format. The X-address format is a single Base58 string that encodes an 'Account ID', a (destination) tag, and whether the address is intended for a test network. This prevents users from unintentionally omitting the destination tag when sending and receiving payments and other transactions.
 
 ## API
 
-### encodeXAddress(classicAddress: string, tag?: number | undefined): string
+### encodeXAddress(classicAddress: string, tag: number | false, test: boolean): string
 
-Encode a classic address and (optional) tag to an X-address. If `tag` is undefined or not provided, the returned X-address explicitly indicates that the recipient does not want a tag to be used.
+Encode a classic address and (optional) tag to an X-address. If `tag` is `false`, the returned X-address explicitly indicates that the recipient does not want a tag to be used. If `test` is `true`, consumers of the address will know that the address is intended for use on test network(s) and the address will start with `T`.
 
-### decodeXAddress(xAddress: string): {classicAddress: string, tag?: number}
+```js
+> const api = require('ripple-address-codec')
+> api.encodeXAddress('rGWrZyQqhTp9Xu7G5Pkayo7bXjH4k4QYpf', 4294967295)
+'XVLhHMPHU98es4dbozjVtdWzVrDjtV18pX8yuPT7y4xaEHi'
+```
 
-Decode an X-address to a classic address and tag. If the X-address did not have a tag, the returned object will not have a `tag` field.
+### decodeXAddress(xAddress: string): {classicAddress: string, tag: number | false, test: boolean}
+
+Decode an X-address to a classic address and tag. If the X-address did not have a tag, the returned object will not have a `tag` field. If the X-address is intended for use on test network(s), `test` will be `true`; if it is intended for use on the main network (mainnet), `test` will be `false`.
+
+```js
+> const api = require('ripple-address-codec')
+> rippleAddressCodec.decodeXAddress('XVLhHMPHU98es4dbozjVtdWzVrDjtV18pX8yuPT7y4xaEHi')
+{
+  classicAddress: 'rGWrZyQqhTp9Xu7G5Pkayo7bXjH4k4QYpf',
+  tag: 4294967295,
+  test: true
+}
+```
 
 ### isValidXAddress(xAddress: string): boolean
 
 Returns `true` if the provided X-address is valid, or `false` otherwise.
+
+```js
+> const api = require('ripple-address-codec')
+> api.isValidXAddress('XVLhHMPHU98es4dbozjVtdWzVrDjtV18pX8yuPT7y4xaEHi')
+true
+```
 
 ### Other functions
 
@@ -75,6 +97,6 @@ This tells jest to output code coverage info in the `./coverage` directory, in a
 
 This library references and adopts code and standards from the following sources:
 
-- [XLS-5d Standard for Tagged Addresses](https://github.com/xrp-community/standards-drafts/issues/6)
-- [XRPL Tagged Address Codec](https://github.com/xrp-community/xrpl-tagged-address-codec)
-- [X-Address transaction functions](https://github.com/codetsunami/xrpl-tools/tree/master/xaddress-functions)
+- [XLS-5d Standard for Tagged Addresses](https://github.com/xrp-community/standards-drafts/issues/6) by @nbougalis
+- [XRPL Tagged Address Codec](https://github.com/xrp-community/xrpl-tagged-address-codec) by @WietseWind
+- [X-Address transaction functions](https://github.com/codetsunami/xrpl-tools/tree/master/xaddress-functions) by @codetsunami
