@@ -1,6 +1,6 @@
 {
   "name": "ripple-address-codec",
-  "version": "3.1.0-b1",
+  "version": "3.1.0-b2",
   "description": "encodes/decodes base58 encoded XRP Ledger identifiers",
   "files": [
     "dist/*",
