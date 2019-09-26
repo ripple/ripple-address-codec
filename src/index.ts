@@ -69,37 +69,41 @@ function xAddressToClassicAddress(xAddress: string): {classicAddress: string, ta
 
 function decodeXAddress(xAddress: string): {accountId: Buffer, tag: number | false, test: boolean} {
   const decoded = codec.decodeChecked(xAddress)
-  const test = (() => {
-    const decodedPrefix = decoded.slice(0, 2)
-    if (PREFIX_BYTES.MAIN.equals(decodedPrefix)) {
-      return false
-    } else if (PREFIX_BYTES.TEST.equals(decodedPrefix)) {
-      return true
-    } else {
-      throw new Error('Invalid X-address: bad prefix')
-    }
-  })()
+  const test = isBufferForTestAddress(decoded)
   const accountId = decoded.slice(2, 22)
-  const flag = decoded[22]
-  if (flag >= 2) {
-    // No support for 64-bit tags at this time
-    throw new Error('Unsupported X-address')
-  }
-  const tag = (() => {
-    if (flag === 1) {
-      // Little-endian to big-endian
-      return decoded[23] + decoded[24] * 0x100 + decoded[25] * 0x10000 + decoded[26] * 0x1000000
-    }
-    assert.strictEqual(flag, 0, 'flag must be zero to indicate no tag')
-    assert.ok(Buffer.from('0000000000000000', 'hex').equals(decoded.slice(23, 23 + 8)),
-      'remaining bytes must be zero')
-    return false
-  })()
+  const tag = tagFromBuffer(decoded)
   return {
     accountId,
     tag,
     test
   }
+}
+
+function isBufferForTestAddress(buf: Buffer): boolean {
+  const decodedPrefix = buf.slice(0, 2)
+  if (PREFIX_BYTES.MAIN.equals(decodedPrefix)) {
+    return false
+  } else if (PREFIX_BYTES.TEST.equals(decodedPrefix)) {
+    return true
+  } else {
+    throw new Error('Invalid X-address: bad prefix')
+  }
+}
+
+function tagFromBuffer(buf: Buffer): number | false {
+  const flag = buf[22]
+  if (flag >= 2) {
+    // No support for 64-bit tags at this time
+    throw new Error('Unsupported X-address')
+  }
+  if (flag === 1) {
+    // Little-endian to big-endian
+    return buf[23] + buf[24] * 0x100 + buf[25] * 0x10000 + buf[26] * 0x1000000
+  }
+  assert.strictEqual(flag, 0, 'flag must be zero to indicate no tag')
+  assert.ok(Buffer.from('0000000000000000', 'hex').equals(buf.slice(23, 23 + 8)),
+    'remaining bytes must be zero')
+  return false
 }
 
 function isValidXAddress(xAddress: string): boolean {

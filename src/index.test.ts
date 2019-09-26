@@ -96,8 +96,7 @@ const testCases = [
     const tag = testCase[1] !== false ? testCase[1] as number : false
     const xAddress = isTestAddress ? testCase[3] as string : testCase[2] as string
     test(`Converts ${classicAddress}${tag ? ':' + tag : ''} to ${xAddress}${network}`, () => {
-      const myXAddress = classicAddressToXAddress(classicAddress, tag, isTestAddress)
-      expect(myXAddress).toBe(xAddress)
+      expect(classicAddressToXAddress(classicAddress, tag, isTestAddress)).toBe(xAddress)
       const myClassicAddress = xAddressToClassicAddress(xAddress)
       expect(myClassicAddress).toEqual({
         classicAddress,
