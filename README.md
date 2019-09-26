@@ -8,23 +8,23 @@ All tools and apps in the XRP Ledger ecosystem are encouraged to adopt support f
 
 ## API
 
-### encodeXAddress(classicAddress: string, tag: number | false, test: boolean): string
+### classicAddressToXAddress(classicAddress: string, tag: number | false, test: boolean): string
 
-Encode a classic address and (optional) tag to an X-address. If `tag` is `false`, the returned X-address explicitly indicates that the recipient does not want a tag to be used. If `test` is `true`, consumers of the address will know that the address is intended for use on test network(s) and the address will start with `T`.
+Convert a classic address and (optional) tag to an X-address. If `tag` is `false`, the returned X-address explicitly indicates that the recipient does not want a tag to be used. If `test` is `true`, consumers of the address will know that the address is intended for use on test network(s) and the address will start with `T`.
 
 ```js
 > const api = require('ripple-address-codec')
-> api.encodeXAddress('rGWrZyQqhTp9Xu7G5Pkayo7bXjH4k4QYpf', 4294967295)
+> api.classicAddressToXAddress('rGWrZyQqhTp9Xu7G5Pkayo7bXjH4k4QYpf', 4294967295)
 'XVLhHMPHU98es4dbozjVtdWzVrDjtV18pX8yuPT7y4xaEHi'
 ```
 
-### decodeXAddress(xAddress: string): {classicAddress: string, tag: number | false, test: boolean}
+### xAddressToClassicAddress(xAddress: string): {classicAddress: string, tag: number | false, test: boolean}
 
-Decode an X-address to a classic address and tag. If the X-address did not have a tag, the returned object will not have a `tag` field. If the X-address is intended for use on test network(s), `test` will be `true`; if it is intended for use on the main network (mainnet), `test` will be `false`.
+Convert an X-address to a classic address and tag. If the X-address did not have a tag, the returned object will not have a `tag` field. If the X-address is intended for use on test network(s), `test` will be `true`; if it is intended for use on the main network (mainnet), `test` will be `false`.
 
 ```js
 > const api = require('ripple-address-codec')
-> rippleAddressCodec.decodeXAddress('XVLhHMPHU98es4dbozjVtdWzVrDjtV18pX8yuPT7y4xaEHi')
+> rippleAddressCodec.xAddressToClassicAddress('XVLhHMPHU98es4dbozjVtdWzVrDjtV18pX8yuPT7y4xaEHi')
 {
   classicAddress: 'rGWrZyQqhTp9Xu7G5Pkayo7bXjH4k4QYpf',
   tag: 4294967295,

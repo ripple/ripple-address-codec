@@ -1,7 +1,8 @@
 import {
-  encodeXAddress, // Encode classic address and optional tag to X-address
-  decodeXAddress, // Decode X-address to classic address and optional tag
-  isValidXAddress // Check whether an X-address (X...) is valid
+  classicAddressToXAddress,
+  xAddressToClassicAddress,
+  isValidXAddress,
+  encodeXAddress
 } from './index'
 
 const testCases = [
@@ -86,6 +87,7 @@ const testCases = [
 ]
 
 ;[false, true].forEach(isTestAddress => {
+  const MAX_32_BIT_UNSIGNED_INT = 4294967295
   const network = isTestAddress ? ' (test)' : ' (main)'
 
   for (const i in testCases) {
@@ -94,9 +96,9 @@ const testCases = [
     const tag = testCase[1] !== false ? testCase[1] as number : false
     const xAddress = isTestAddress ? testCase[3] as string : testCase[2] as string
     test(`Converts ${classicAddress}${tag ? ':' + tag : ''} to ${xAddress}${network}`, () => {
-      const myXAddress = encodeXAddress(classicAddress, tag, isTestAddress)
+      const myXAddress = classicAddressToXAddress(classicAddress, tag, isTestAddress)
       expect(myXAddress).toBe(xAddress)
-      const myClassicAddress = decodeXAddress(xAddress)
+      const myClassicAddress = xAddressToClassicAddress(xAddress)
       expect(myClassicAddress).toEqual({
         classicAddress,
         tag,
@@ -107,14 +109,12 @@ const testCases = [
   }
 
   {
-    const MAX_32_BIT_UNSIGNED_INT = 4294967295
-
     const classicAddress = 'rGWrZyQqhTp9Xu7G5Pkayo7bXjH4k4QYpf'
     const tag = MAX_32_BIT_UNSIGNED_INT + 1
 
     test(`Converting ${classicAddress}:${tag}${network} throws`, () => {
       expect(() => {
-        encodeXAddress(classicAddress, tag, isTestAddress)
+        classicAddressToXAddress(classicAddress, tag, isTestAddress)
       }).toThrowError(new Error('Invalid tag'))
     })
   }
@@ -123,8 +123,27 @@ const testCases = [
     const classicAddress = 'r'
     test(`Invalid classic address: Converting ${classicAddress}${network} throws`, () => {
       expect(() => {
-        encodeXAddress(classicAddress, false, isTestAddress)
+        classicAddressToXAddress(classicAddress, false, isTestAddress)
       }).toThrowError(new Error('invalid_input_size: decoded data must have length >= 5'))
+    })
+  }
+
+  {
+    const highAndLowAccounts = [
+      Buffer.from('00'.repeat(20), 'hex'),
+      Buffer.from('00'.repeat(19) + '01', 'hex'),
+      Buffer.from('01'.repeat(20), 'hex'),
+      Buffer.from('FF'.repeat(20), 'hex')
+    ]
+
+    highAndLowAccounts.forEach(accountId => {
+      [false, 0, 1, MAX_32_BIT_UNSIGNED_INT].forEach(t => {
+        const tag = (t as number | false)
+        const xAddress = encodeXAddress(accountId, tag, isTestAddress)
+        test(`Encoding ${accountId.toString('hex')}${tag ? ':' + tag : ''} to ${xAddress} has expected length`, () => {
+          expect(xAddress.length).toBe(47)
+        })
+      })
     })
   }
 })
@@ -133,7 +152,7 @@ const testCases = [
   const xAddress = 'XVLhHMPHU98es4dbozjVtdWzVrDjtV5fdx1mHp98tDMoQXa'
   test(`Invalid X-address (bad checksum): Converting ${xAddress} throws`, () => {
     expect(() => {
-      decodeXAddress(xAddress)
+      xAddressToClassicAddress(xAddress)
     }).toThrowError(new Error('checksum_invalid'))
   })
 }
@@ -142,7 +161,7 @@ const testCases = [
   const xAddress = 'dGzKGt8CVpWoa8aWL1k18tAdy9Won3PxynvbbpkAqp3V47g'
   test(`Invalid X-address (bad prefix): Converting ${xAddress} throws`, () => {
     expect(() => {
-      decodeXAddress(xAddress)
+      xAddressToClassicAddress(xAddress)
     }).toThrowError(new Error('Invalid X-address: bad prefix'))
   })
 }
@@ -154,8 +173,14 @@ test(`Invalid X-address (64-bit tag) throws`, () => {
     //   classicAddress: 'rGWrZyQqhTp9Xu7G5Pkayo7bXjH4k4QYpf',
     //   tag: MAX_32_BIT_UNSIGNED_INT + 1
     // }
-    decodeXAddress('XVLhHMPHU98es4dbozjVtdWzVrDjtV18pX8zeUygYrCgrPh')
+    xAddressToClassicAddress('XVLhHMPHU98es4dbozjVtdWzVrDjtV18pX8zeUygYrCgrPh')
   }).toThrowError('Unsupported X-address')
+})
+
+test(`Invalid Account ID throws`, () => {
+  expect(() => {
+    encodeXAddress(Buffer.from('00'.repeat(19), 'hex'), false, false)
+  }).toThrowError('Account ID must be 20 bytes')
 })
 
 test(`isValidXAddress returns false for invalid X-address`, () => {

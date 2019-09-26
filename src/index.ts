@@ -1,12 +1,12 @@
 import {
-  codec, // Codec with XRP alphabet
-  encodeSeed, // Encode entropy as a "seed"
-  decodeSeed, // Decode a seed into an object with its version, type, and bytes
-  encodeAccountID, // Encode bytes as a classic address (r...)
-  decodeAccountID, // Decode a classic address to its raw bytes
-  encodeNodePublic, // Encode bytes to XRP Ledger node public key format
-  decodeNodePublic, // Decode an XRP Ledger node public key into its raw bytes
-  isValidAddress // Check whether a classic address (r...) is valid
+  codec,
+  encodeSeed,
+  decodeSeed,
+  encodeAccountID,
+  decodeAccountID,
+  encodeNodePublic,
+  decodeNodePublic,
+  isValidAddress
 } from './xrp-codec'
 import * as assert from 'assert'
 
@@ -15,14 +15,21 @@ const PREFIX_BYTES = {
   TEST: Buffer.from([0x04, 0x93]) // 4, 147
 }
 
-function encodeXAddress(classicAddress: string, tag: number | false, test: boolean): string {
+function classicAddressToXAddress(classicAddress: string, tag: number | false, test: boolean): string {
+  const accountId = decodeAccountID(classicAddress)
+  return encodeXAddress(accountId, tag, test)
+}
+
+function encodeXAddress(accountId: Buffer, tag: number | false, test: boolean): string {
+  if (accountId.length !== 20) {
+    // RIPEMD160 is 160 bits = 20 bytes
+    throw new Error('Account ID must be 20 bytes')
+  }
   const MAX_32_BIT_UNSIGNED_INT = 4294967295
   const flag = tag === false ? 0 : tag <= MAX_32_BIT_UNSIGNED_INT ? 1 : 2
   if (flag === 2) {
     throw new Error('Invalid tag')
   }
-
-  const accountId = decodeAccountID(classicAddress)
   if (tag === false) {
     tag = 0
   }
@@ -46,7 +53,21 @@ function encodeXAddress(classicAddress: string, tag: number | false, test: boole
   return xAddress
 }
 
-function decodeXAddress(xAddress: string): {classicAddress: string, tag: number | false, test: boolean} {
+function xAddressToClassicAddress(xAddress: string): {classicAddress: string, tag: number | false, test: boolean} {
+  const {
+    accountId,
+    tag,
+    test
+  } = decodeXAddress(xAddress)
+  const classicAddress = encodeAccountID(accountId)
+  return {
+    classicAddress,
+    tag,
+    test
+  }
+}
+
+function decodeXAddress(xAddress: string): {accountId: Buffer, tag: number | false, test: boolean} {
   const decoded = codec.decodeChecked(xAddress)
   const test = (() => {
     const decodedPrefix = decoded.slice(0, 2)
@@ -58,7 +79,7 @@ function decodeXAddress(xAddress: string): {classicAddress: string, tag: number 
       throw new Error('Invalid X-address: bad prefix')
     }
   })()
-  const classicAddress = encodeAccountID(decoded.slice(2, 22))
+  const accountId = decoded.slice(2, 22)
   const flag = decoded[22]
   if (flag >= 2) {
     // No support for 64-bit tags at this time
@@ -75,7 +96,7 @@ function decodeXAddress(xAddress: string): {classicAddress: string, tag: number 
     return false
   })()
   return {
-    classicAddress,
+    accountId,
     tag,
     test
   }
@@ -99,7 +120,9 @@ export {
   encodeNodePublic, // Encode bytes to XRP Ledger node public key format
   decodeNodePublic, // Decode an XRP Ledger node public key into its raw bytes
   isValidAddress, // Check whether a classic address (r...) is valid
-  encodeXAddress, // Encode classic address and optional tag to X-address
-  decodeXAddress, // Decode X-address to classic address and optional tag
+  classicAddressToXAddress, // Derive X-address from classic address, tag, and network ID
+  encodeXAddress, // Encode account ID, tag, and network ID to X-address
+  xAddressToClassicAddress, // Decode X-address to account ID, tag, and network ID
+  decodeXAddress, // Convert X-address to classic address, tag, and network ID
   isValidXAddress // Check whether an X-address (X...) is valid
 }
