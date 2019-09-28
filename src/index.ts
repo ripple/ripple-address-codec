@@ -6,7 +6,7 @@ import {
   decodeAccountID,
   encodeNodePublic,
   decodeNodePublic,
-  isValidAddress
+  isValidClassicAddress
 } from './xrp-codec'
 import * as assert from 'assert'
 
@@ -123,10 +123,10 @@ export {
   decodeAccountID, // Decode a classic address to its raw bytes
   encodeNodePublic, // Encode bytes to XRP Ledger node public key format
   decodeNodePublic, // Decode an XRP Ledger node public key into its raw bytes
-  isValidAddress, // Check whether a classic address (r...) is valid
+  isValidClassicAddress, // Check whether a classic address (r...) is valid
   classicAddressToXAddress, // Derive X-address from classic address, tag, and network ID
   encodeXAddress, // Encode account ID, tag, and network ID to X-address
   xAddressToClassicAddress, // Decode X-address to account ID, tag, and network ID
   decodeXAddress, // Convert X-address to classic address, tag, and network ID
-  isValidXAddress // Check whether an X-address (X...) is valid
+  isValidXAddress, // Check whether an X-address (X...) is valid
 }

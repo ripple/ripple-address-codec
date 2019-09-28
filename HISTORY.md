@@ -5,6 +5,7 @@
 ### Breaking Changes
 
 * `decodeAddress` has been renamed to `decodeAccountID`
+* `isValidAddress` has been renamed to `isValidClassicAddress`
 
 ### New Features
 

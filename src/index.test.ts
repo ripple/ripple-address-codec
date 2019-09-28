@@ -7,6 +7,48 @@ import {
 
 const testCases = [
   [
+    'r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59',
+    false,
+    'X7AcgcsBL6XDcUb289X4mJ8djcdyKaB5hJDWMArnXr61cqZ',
+    'T719a5UwUCnEs54UsxG9CJYYDhwmFCqkr7wxCcNcfZ6p5GZ'
+  ],
+  [
+    'r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59',
+    1,
+    'X7AcgcsBL6XDcUb289X4mJ8djcdyKaGZMhc9YTE92ehJ2Fu',
+    'T719a5UwUCnEs54UsxG9CJYYDhwmFCvbJNZbi37gBGkRkbE'
+  ],
+  [
+    'r9cZA1mLK5R5Am25ArfXFmqgNwjZgnfk59',
+    11747,
+    'X7AcgcsBL6XDcUb289X4mJ8djcdyKaLFuhLRuNXPrDeJd9A',
+    'T719a5UwUCnEs54UsxG9CJYYDhwmFCziiNHtUukubF2Mg6t'
+  ],
+  [
+    'rLczgQHxPhWtjkaQqn3Q6UM8AbRbbRvs5K',
+    false,
+    'XVZVpQj8YSVpNyiwXYSqvQoQqgBttTxAZwMcuJd4xteQHyt',
+    'TVVrSWtmQQssgVcmoMBcFQZKKf56QscyWLKnUyiuZW8ALU4'
+  ],
+  [
+    'rpZc4mVfWUif9CRoHRKKcmhu1nx2xktxBo',
+    false,
+    'X7YenJqxv3L66CwhBSfd3N8RzGXxYqPopMGMsCcpho79rex',
+    'T77wVQzA8ntj9wvCTNiQpNYLT5hmhRsFyXDoMLqYC4BzQtV'
+  ],
+  [
+    'rsA2LpzuawewSBQXkiju3YQTMzW13pAAdW',
+    23480,
+    'X7d3eHCXzwBeWrZec1yT24iZerQjYL8m8zCJ16ACxu1BrBY',
+    'T7YChPFWifjCAXLEtg5N74c7fSAYsvSokwcmBPBUZWhxH5P'
+  ],
+  [
+    'rsA2LpzuawewSBQXkiju3YQTMzW13pAAdW',
+    11747,
+    'X7d3eHCXzwBeWrZec1yT24iZerQjYLo2CJf8oVC5CMWey5m',
+    'T7YChPFWifjCAXLEtg5N74c7fSAYsvTcc7nEfwuEEvn5Q4w'
+  ],
+  [
     'rGWrZyQqhTp9Xu7G5Pkayo7bXjH4k4QYpf',
     false,
     'XVLhHMPHU98es4dbozjVtdWzVrDjtV5fdx1mHp98tDMoQXb',

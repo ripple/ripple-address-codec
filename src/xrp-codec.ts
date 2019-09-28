@@ -191,8 +191,7 @@ export function encodeNodePublic(bytes: Buffer): string {
   return codecWithXrpAlphabet.encode(bytes, opts)
 }
 
-// Address === AccountID
-export function isValidAddress(address: string): boolean {
+export function isValidClassicAddress(address: string): boolean {
   try {
     decodeAccountID(address)
   } catch (e) {
