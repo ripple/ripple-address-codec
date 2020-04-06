@@ -56,7 +56,7 @@ Returns `false` for classic addresses (starting with `r`). To validate a classic
 
 ### isValidClassicAddress(address: string): boolean
 
-Check whether a classic address (starting with `r`...) is valid
+Check whether a classic address (starting with `r`...) is valid.
 
 Returns `false` for X-addresses (extended addresses). To validate an X-address, use `isValidXAddress`.
 
@@ -79,33 +79,33 @@ Return object type:
 
 ### encodeAccountID(bytes: Buffer): string
 
-Encode bytes as a classic address (starting with `r`...)
+Encode bytes as a classic address (starting with `r`...).
 
 ### decodeAccountID(accountId: string): Buffer
 
-Decode a classic address (starting with `r`...) to its raw bytes
+Decode a classic address (starting with `r`...) to its raw bytes.
 
 ### encodeNodePublic(bytes: Buffer): string
 
-Encode bytes to the XRP Ledger "node public key" format (base58)
+Encode bytes to the XRP Ledger "node public key" format (base58).
 
 This is useful for rippled validators.
 
 ### decodeNodePublic(base58string: string): Buffer
 
-Decode an XRP Ledger "node public key" (in base58 format) into its raw bytes
+Decode an XRP Ledger "node public key" (in base58 format) into its raw bytes.
 
 ### encodeAccountPublic(bytes: Buffer): string
 
-Encode a public key, as for payment channels
+Encode a public key, as for payment channels.
 
 ### decodeAccountPublic(base58string: string): Buffer
 
-Decode a public key, as for payment channels
+Decode a public key, as for payment channels.
 
 ### encodeXAddress(accountId: Buffer, tag: number | false, test: boolean): string
 
-Encode account ID, tag, and network ID to X-address
+Encode account ID, tag, and network ID to X-address.
 
 `accountId` must be 20 bytes because it is a RIPEMD160 hash, which is 160 bits (160 bits = 20 bytes).
 
@@ -115,7 +115,7 @@ If `test` is `true`, this address is intended for use with a test network such a
 
 ### decodeXAddress(xAddress: string): {accountId: Buffer, tag: number | false, test: boolean}
 
-Convert an X-address to its classic address, tag, and network ID
+Convert an X-address to its classic address, tag, and network ID.
 
 ### Other functions
 
