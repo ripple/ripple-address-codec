@@ -165,9 +165,13 @@ Run unit tests with:
 
     npm test
 
+Use `--watch` to run in watch mode, so that when you modify the tests, they are automatically re-run:
+
+    npm test -- --watch
+
 Use `--coverage` to generate and display code coverage information:
 
-    npm test --coverage
+    npm test -- --coverage
 
 This tells jest to output code coverage info in the `./coverage` directory, in addition to showing it on the command line.
 
